@@ -1,34 +1,39 @@
-"""Weather client API skeleton.
+"""Weather observation data (気象観測データ).
 
-The public functions will follow the weather data client design document.
+One CSV per month and observation site, with a ``日付`` column
+(fgdc_publish_platform 00_docs/design/weather-data-client.md IV. C.).
+The work is done by the shared parts in ``UTForestDataFetcher.core``.
 """
 
-import os
+from .core import cite as _cite
+from .core.monthly import MonthlyData
+
+_data = MonthlyData("weather", date_column="日付")
 
 
-def api_base_url():
-    """Return the configured public API origin without exposing a test endpoint."""
-    value = os.environ.get("UTFOREST_API_BASE_URL", "").strip()
-    if not value:
-        raise RuntimeError("Set UTFOREST_API_BASE_URL before calling the weather API")
-    return value.rstrip("/")
+def DoiResolver(*, forest, site, range, version="current", as_of=None, media_type="data"):
+    """DOIs of the monthly reports of a site in a range of dates (one per month).
 
-
-def DoiResolver(*, forest, site, range, version="current", as_of=None):
-    raise NotImplementedError("DoiResolver is not implemented yet")
+    >>> DoiResolver(forest="千葉演習林", site="札郷", range=("2026-01-01", "2026-03-31"))
+    """
+    return _data.resolve(range=range, version=version, as_of=as_of, media_type=media_type, forest=forest, site=site)
 
 
 def FetchData(*, dois, filter=None):
-    raise NotImplementedError("FetchData is not implemented yet")
+    """The data of versioned DOIs as a pandas DataFrame indexed by date."""
+    return _data.fetch(dois, filter=filter)
 
 
 def Cite(*, dois, format="bibtex"):
-    raise NotImplementedError("Cite is not implemented yet")
+    """Citations of the DOIs ("bibtex", "ris", "apa" or "csl") as a string."""
+    return _cite.cite(dois, format=format)
 
 
 def CheckUpdates(*, dois):
-    raise NotImplementedError("CheckUpdates is not implemented yet")
+    """Months whose report has a newer version than the DOI given, as a DataFrame."""
+    return _data.check_updates(dois)
 
 
 def Catalog(*, forest=None, site=None):
-    raise NotImplementedError("Catalog is not implemented yet")
+    """Forests, sites, variables and periods that can be asked for, as a DataFrame."""
+    return _data.catalog(forest=forest, site=site)
