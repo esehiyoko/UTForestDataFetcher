@@ -1,0 +1,5 @@
+# Tools to build the local JupyterLite site (not needed to use the package).
+build
+jupyterlite-core==0.6.4
+jupyterlite-pyodide-kernel==0.6.1
+jupyter-server

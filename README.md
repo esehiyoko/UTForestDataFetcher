@@ -29,8 +29,10 @@ import UTForestDataFetcher
 UTForestDataFetcher.configure(base_url="https://...")
 ```
 
-In GitHub Actions it comes from the repository secret `UTFOREST_API_BASE_URL`.
-CI fails if a URL other than doi.org or a placeholder appears in the code.
+In GitHub Actions it comes from the repository secret `UTFOREST_API_BASE_URL`,
+used only by the manual workflow `Live API` (`.github/workflows/live.yml`).
+CI fails if a URL other than doi.org, the launch badges, or a placeholder appears
+in the code, the README, or the examples.
 
 ## Weather
 
@@ -63,12 +65,24 @@ Weather.CheckUpdates(dois=dois)            # months with a newer version
   return it, the citation is made from its Citeproc JSON. Mock DOIs
   (`10.xxxxx/...`) are not registered at doi.org and cannot be cited.
 
+## Examples
+
+[examples/weather_quickstart.ipynb](examples/weather_quickstart.ipynb) runs on
+MyBinder, Google Colab, and a local JupyterLite (in the browser, with CORS); see
+[examples/README.md](examples/README.md).
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/esehiyoko/UTForestDataFetcher/main?labpath=examples%2Fweather_quickstart.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/esehiyoko/UTForestDataFetcher/blob/main/examples/weather_quickstart.ipynb)
+
+In a browser (JupyterLite) the package sends its requests through the browser
+(`XMLHttpRequest`), so the API must allow the page's origin with CORS.
+
 ## Layout
 
 | Module | Role |
 | --- | --- |
 | `core/config.py` | API address (run time only) |
-| `core/http.py` | GET requests; 400 → `ValueError`, 404 → `LookupError`, others → `ApiError` |
+| `core/http.py` | GET requests (urllib, or the browser in JupyterLite); 400 → `ValueError`, 404 → `LookupError`, others → `ApiError` |
 | `core/doi.py` | versioned and unversioned DOIs |
 | `core/periods.py` | months in a range of dates |
 | `core/versions.py` | choosing one DOI per month (current, canonical, as_of, by month) |

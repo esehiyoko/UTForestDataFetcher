@@ -1,0 +1,2 @@
+# MyBinder installs this repository with the plot extra, then opens examples/.
+-e .[plot]
