@@ -4,10 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "UTForestDataFetcher"
-version = "0.1.0.dev0"
-description = "Python helper for UTokyo Forest weather data"
+dynamic = ["version"]
+description = "Python helper for UTokyo Forest data (weather first)"
 readme = "README.md"
 requires-python = ">=3.10"
+dependencies = ["pandas>=1.5"]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.5"]
+
+[tool.setuptools.dynamic]
+version = { attr = "UTForestDataFetcher.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -19,9 +19,26 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install package
-        run: python -m pip install .
-      - name: Run smoke tests
+        run: python -m pip install ".[plot]"
+      - name: Run tests
+        # The fake API in tests/ needs no address. LiveApiTest runs only when the
+        # repository secret UTFOREST_API_BASE_URL is set; GitHub masks it in logs.
+        env:
+          UTFOREST_API_BASE_URL: ${{ secrets.UTFOREST_API_BASE_URL }}
         run: python -m unittest discover -s tests -v
+
+  no-endpoint:
+    name: no API address in the code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Only doi.org and placeholders may appear as URLs
+        run: |
+          if grep -rnE "https?://[^ \"')]+" src README.md .env.example \
+             | grep -vE "https?://(doi\.org|dx\.doi\.org)|https://\.\.\.|example\.(invalid|org)|github\.com/esehiyoko"; then
+            echo "Remove the address above: API addresses are given at run time (UTFOREST_API_BASE_URL)." >&2
+            exit 1
+          fi
 
   build:
     name: build distribution
